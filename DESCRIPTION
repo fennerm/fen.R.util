@@ -1,4 +1,4 @@
-Package: R.util
+Package: fen.R.util
 Type: Package
 Title: Utility code for use in other personal R packages
 Version: 0.1.0
