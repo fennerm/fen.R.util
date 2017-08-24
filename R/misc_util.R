@@ -1,4 +1,12 @@
 
+#' Read a tab separated file
+#' @param f File path
+#' @return Data.frame
+#' @export
+read.tsv <- function(f) {
+    read.csv(f, sep = "\t", stringsAsFactors = FALSE)
+}
+
 #' @export
 replace_rows <- function(df, old_index, new_row) {
     # exclude rows from table
