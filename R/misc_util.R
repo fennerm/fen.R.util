@@ -8,6 +8,14 @@ write.table_with_header <- function(x, file, header, ...){
     write.table(x, file, append = T, ...)
 }
 
+#' Convert a list to a space separated string
+#' @param lst A list
+#' @return A string
+#' @export
+list_to_string(lst) {
+    paste( unlist(l), collapse=' ')
+}
+
 #' Read a text file as a single string
 #' @param filename File path
 #' @return Character
