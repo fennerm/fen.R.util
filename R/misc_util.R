@@ -3,7 +3,7 @@
 #' @param file File path to write to
 #' @param header The header
 #' @export
-write.table_with_header <- function(x, file, header, ...){
+write_table_with_header <- function(x, file, header, ...){
     cat(header, '\n',  file = file)
     write.table(x, file, append = T, ...)
 }
@@ -12,7 +12,7 @@ write.table_with_header <- function(x, file, header, ...){
 #' @param lst A list
 #' @return A string
 #' @export
-list_to_string(lst) {
+list_to_string <- function(lst) {
     paste( unlist(l), collapse=' ')
 }
 
@@ -20,7 +20,7 @@ list_to_string(lst) {
 #' @param filename File path
 #' @return Character
 #' @export
-read_text <- function(filename) {
+read_test <- function(filename) {
     readChar(filename, file.info(filename)$size)
 }
 
@@ -28,22 +28,22 @@ read_text <- function(filename) {
 #' @param f File path
 #' @return Data.frame
 #' @export
-read.tsv <- function(f) {
+read_tsv <- function(f) {
     read.csv(f, sep = "\t", stringsAsFactors = FALSE)
 }
 
 #' @export
-replace_rows <- function(df, old_index, new_row) {
+replace_rows <- function(df, old.index, new.row) {
     # exclude rows from table
-    new_df <- df[-old_index,]
+    new.df <- df[-old.index,]
 
-    pre_half <- df[1:(old_index[1] - 1),]
-    post_half <- df[(tail(old_index, n = 1) + 1):nrow(df),]
+    pre.half <- df[1:(old.index[1] - 1),]
+    post.half <- df[(tail(old.index, n = 1) + 1):nrow(df),]
     # replace with the new row
 
-    new_df <- rbind(pre_half, new_row, post_half)
-    row.names(new_df) <- NULL
-    new_df
+    new.df <- rbind(pre.half, new.row, post.half)
+    row.names(new.df) <- NULL
+    new.df
 }
 
 #' @export
