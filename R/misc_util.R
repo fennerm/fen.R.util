@@ -20,7 +20,7 @@ list_to_string <- function(lst) {
 #' @param filename File path
 #' @return Character
 #' @export
-read_test <- function(filename) {
+read_text <- function(filename) {
     readChar(filename, file.info(filename)$size)
 }
 
@@ -44,9 +44,4 @@ replace_rows <- function(df, old.index, new.row) {
     new.df <- rbind(pre.half, new.row, post.half)
     row.names(new.df) <- NULL
     new.df
-}
-
-#' @export
-ulapply <- function(...) {
-    unlist(lapply(...))
 }
