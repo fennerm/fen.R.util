@@ -31,17 +31,3 @@ read_text <- function(filename) {
 read_tsv <- function(f) {
     read.csv(f, sep = "\t", stringsAsFactors = FALSE)
 }
-
-#' @export
-replace_rows <- function(df, old.index, new.row) {
-    # exclude rows from table
-    new.df <- df[-old.index,]
-
-    pre.half <- df[1:(old.index[1] - 1),]
-    post.half <- df[(tail(old.index, n = 1) + 1):nrow(df),]
-    # replace with the new row
-
-    new.df <- rbind(pre.half, new.row, post.half)
-    row.names(new.df) <- NULL
-    new.df
-}
