@@ -14,14 +14,14 @@ read_vcf <- function(path) {
     # produce an empty table instead
     }, error = function(e) {
         table <- data.frame(
-            CHROM=factor(),
-            POS=integer(),
-            ID=factor(),
-            REF=factor(),
-            ALT=factor(),
-            QUAL=integer(),
-            FILTER=factor(),
-            INFO=factor())
+            CHROM = factor(),
+            POS = integer(),
+            ID = factor(),
+            REF = factor(),
+            ALT = factor(),
+            QUAL = integer(),
+            FILTER = factor(),
+            INFO = factor())
     })
     table
 }

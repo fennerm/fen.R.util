@@ -32,14 +32,27 @@ add_missing_columns <- function(table, column_names, fill = NA) {
 #' @return data.frame
 #' @export
 replace_rows <- function(df, old_index, new_row) {
-    # exclude rows from table
-    new_df <- df[-old_index, ]
+  # exclude rows from table
+  new_df <- df[-old_index, ]
 
-    pre_half <- df[1:(old_index[1] - 1), ]
-    post_half <- df[(tail(old_index, n = 1) + 1):nrow(df), ]
-    # replace with the new_row
+  pre_half <- df[1:(old_index[1] - 1), ]
+  post_half <- df[(tail(old_index, n = 1) + 1):nrow(df), ]
+  # replace with the new_row
 
-    new.df <- rbind(pre_half, new_row, post_half)
-    row.names(new.df) <- NULL
-    new.df
+  new.df <- rbind(pre_half, new_row, post_half)
+  row.names(new.df) <- NULL
+  new.df
+}
+
+#' Filter a data.frame to exclude all rows which are not in 'groups'
+#' @param df A data.frame
+#' @param by Character; A column name from 'df'
+#' @param groups Factor; Vector of levels
+#' @return A data.frame
+#' @import dplyr
+#' @export
+select_groups <- function(df, by, groups) {
+  grouping <- quo(df[, by])
+  subset <- filter(df, !!grouping %in% groups)
+  subset
 }

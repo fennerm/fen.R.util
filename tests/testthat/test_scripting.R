@@ -1,4 +1,3 @@
-library(fen.R.util)
 context("Scripting utilities")
 
 test_that("script_name works", {

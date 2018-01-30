@@ -8,4 +8,5 @@ Maintainer: Fenner Macrae <fmacrae.dev@gmail.com>
 License: MIT
 Encoding: UTF-8
 LazyData: true
+Imports: dplyr
 RoxygenNote: 6.0.1
