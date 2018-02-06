@@ -14,12 +14,19 @@ read_text <- function(filename) {
   readChar(filename, file.info(filename)$size)
 }
 
-#' Read a tab separated file
+#' Read a table with sensible defaults
 #' @param f File path
 #' @return Data.frame
 #' @export
-read_tsv <- function(f) {
-  read.csv(f, sep = "\t", stringsAsFactors = FALSE)
+read_table <- function(...) {
+  read.table(..., stringsAsFactors = FALSE, row.names = NULL)
+}
+
+
+#' Write a table with sensible defaults
+write_table <- function(...) {
+  write.table(..., row.names = FALSE, quote = FALSE)
+
 }
 
 #' Write a table to file with added header using write.table
