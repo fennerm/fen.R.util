@@ -24,10 +24,11 @@ read_table <- function(...) {
 
 
 #' Write a table with sensible defaults
+#' @export
 write_table <- function(...) {
   write.table(..., row.names = FALSE, quote = FALSE)
-
 }
+
 
 #' Write a table to file with added header using write.table
 #' @param x The table
