@@ -22,6 +22,14 @@ read_table <- function(...) {
   read.table(..., stringsAsFactors = FALSE, row.names = NULL)
 }
 
+#' Write table or plot to file
+save_results <- function(filename, dat) {
+  if (file_ext(filename) == ".csv") {
+    write_table(dat, filename)
+  } else if (file_ext(filename) == ".jpg") {
+    ggsave(filename, plot = dat)
+  }
+}
 
 #' Write a table with sensible defaults
 #' @export
