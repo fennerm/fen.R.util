@@ -94,6 +94,7 @@ split_table <- function(df, by = NULL, levels = NULL) {
 #' @return A list of results from 'func'
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr group_by filter ungroup group_vars
+#' @export
 tibble_combn <- function(dat, set_size, func, func_type = summarize,
   grouped_input = FALSE, within = NULL, ...) {
   if (!is.null(within)) {

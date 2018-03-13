@@ -41,6 +41,7 @@ tibble_do_add <- function(dat) {
   result <- as.data.frame(dat$value + 1)
   result
 }
+
 test_that("tibble_combn, works with simple do function", {
   result <- tibble_combn(
     dat = grouped_tibble,
@@ -106,7 +107,6 @@ test_that("tibble_combn works with within parameter", {
   expect_equal(names(result), expected_names)
   expect_equivalent(unlist(result), c(2, 3, 6, 20, 24, 30))
 })
-
 
 test_that("unlist_preserving_names works", {
   lst <- list(a = list(x = 1, y = 2), b = list(z = 0))
