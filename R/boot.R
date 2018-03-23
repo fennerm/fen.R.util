@@ -43,27 +43,13 @@ bootstrap_test <- function(tbl, statistic, reps = 1e4) {
 #' Apply a two group statistical test to each group in a nested tibble
 #' @importFrom dplyr group_vars
 #' @export
-boot_compare_all <- function(tbl, statistic, within = reps = 1e4, ...) {
-  
-  grouping <- group_vars(tbl)
-  if (!is.null(within)) {
-    tbls <- tbl %>% 
-      unnest %>% 
-      split_table(within) %>% 
-      map(~group_by(., !!as.name(grouping))) %>%
-      map(nest)
-  } else {
-    tbls <- list(tbl)
-  }
-  p_values <- tbls %>% 
-    map(
-      ~tibble_combn(., set_size = 2, func = bootstrap_test, 
-        func_type = summarize,
-        reps = reps,
-        statistic = statistic)
-  output_table <- data.frame(names(p_values), unlist(unname(p_values)))
-  colnames(output_table) <- c(grouping, "p_value")
-  output_table
+boot_compare_all <- function(tbl, statistic, within = NULL, reps = 1e4, ...) {
+  tibble_combn(tbl,
+    set_size = 2,
+    func = bootstrap_test,
+    statistic = statistic,
+    within = within,
+    reps = reps)
 }
 
 

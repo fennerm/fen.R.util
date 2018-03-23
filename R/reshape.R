@@ -99,19 +99,20 @@ split_nested_tibble <- function(tbl, by) {
   tbls
 }
 
-#' Apply a function across all combinations of levels of a tibble group
-#' 
+#' Apply a function across all combinations of groups in a nested tibble
+#'
 #' All extra parameters are passed to the input function
-#' @param dat tbl_df A grouped tibble
-#' @param set_size Number of levels in group to compare in each iteration
-#' @param func function Function to apply to each set
-#' @param func_type Type of dplyr operation, e.g do, summarize
-#' @param within character A column name from 'dat'. If given, comparisons will
-#'                         only be made between values which share the same
-#'                         values in the within column.
+#' @param tbl A nested tibble
+#' @param set_size Number of rows in dat to compare in each iteration
+#' @param func function Function to apply to each set of rows
+#' @param within character A column name from the inner nested tibbles in `tbl`.
+#'                         If given, comparisons will only be made between rows
+#'                         which share the same group in the within column.
 #' @return A list of results from 'func'
 #' @importFrom magrittr "%>%"
-#' @importFrom dplyr group_by filter ungroup group_vars
+#' @importFrom dplyr group_by filter
+#' @importFrom purrr map
+#' @export
 tibble_combn <- function(tbl, set_size, func, within = NULL, ...) {
   grouping <- colnames(tbl)[1]
   results <- tbl %>%

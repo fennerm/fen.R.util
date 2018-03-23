@@ -4,7 +4,7 @@
 \alias{bootstrap_centered_null}
 \title{Bootstrap the null distribution for a statistic centered at a given value}
 \usage{
-bootstrap_centered_null(mutation_table, statistic, center, ..., reps = 1e+05)
+bootstrap_centered_null(mutation_table, statistic, center, ..., reps = 10000)
 }
 \description{
 This function generates a distribution for the null hypothesis that two

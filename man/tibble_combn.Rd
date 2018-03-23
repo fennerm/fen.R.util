@@ -2,26 +2,20 @@
 % Please edit documentation in R/reshape.R
 \name{tibble_combn}
 \alias{tibble_combn}
-\title{Apply a function across all combinations of levels of a tibble group}
+\title{Apply a function across all combinations of groups in a nested tibble}
 \usage{
-tibble_combn(dat, set_size, func, func_type = summarize,
-  grouped_input = FALSE, within = NULL, ...)
+tibble_combn(tbl, set_size, func, within = NULL, ...)
 }
 \arguments{
-\item{dat}{tbl_df A grouped tibble}
+\item{tbl}{A nested tibble}
 
-\item{set_size}{Number of levels in group to compare in each iteration}
+\item{set_size}{Number of rows in dat to compare in each iteration}
 
-\item{func}{function Function to apply to each set}
+\item{func}{function Function to apply to each set of rows}
 
-\item{func_type}{Type of dplyr operation, e.g do, summarize}
-
-\item{grouped_input}{bool If TRUE, groups in 'dat' will be conserved in calls
-to func}
-
-\item{within}{character A column name from 'dat'. If given, comparisons will
-only be made between values which share the same
-values in the within column.}
+\item{within}{character A column name from the inner nested tibbles in `tbl`.
+If given, comparisons will only be made between rows
+which share the same group in the within column.}
 }
 \value{
 A list of results from 'func'

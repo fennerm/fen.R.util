@@ -4,7 +4,7 @@
 \alias{boot_compare_all}
 \title{Apply a two group statistical test to each group in a nested tibble}
 \usage{
-boot_compare_all(grouped_mutation_table, test, within = NULL, reps = 1e+05)
+boot_compare_all(tbl, statistic, within = NULL, reps = 10000, ...)
 }
 \description{
 Apply a two group statistical test to each group in a nested tibble

@@ -4,7 +4,7 @@
 \alias{bootstrap_test}
 \title{Bootstrap difference in statistic across two groups}
 \usage{
-bootstrap_test(tbl, statistic, reps = 1e+05)
+bootstrap_test(tbl, statistic, reps = 10000)
 }
 \arguments{
 \item{statistic}{function; A valid bootstrap statistic}

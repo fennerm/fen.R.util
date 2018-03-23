@@ -4,7 +4,7 @@
 \alias{boot_quantiles}
 \title{Bootstrap a statistic across a table and produce bca ci and quantiles}
 \usage{
-boot_quantiles(tbl, statistic, reps = 1e+05)
+boot_quantiles(tbl, statistic, reps = 10000)
 }
 \arguments{
 \item{tbl}{A tibble}
