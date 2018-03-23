@@ -79,6 +79,26 @@ split_table <- function(df, by = NULL, levels = NULL) {
   dfs
 }
 
+
+#' Split a nested tibble by a column
+#'
+#' @param tbl A nested tibble
+#' @param by A column name within the nested tibble to split by
+#' @return A list of nested tibbles
+split_nested_tibble <- function(tbl, by) {
+  grouping <- colnames(tbl)[1]
+  if (!is.null(by)) {
+    tbls <- tbl %>%
+      unnest %>%
+      split_table(by = by) %>%
+      map(~group_by(., !!as.name(grouping))) %>%
+      map(nest)
+  } else {
+    tbls <- list(tbl)
+  }
+  tbls
+}
+
 #' Apply a function across all combinations of levels of a tibble group
 #' 
 #' All extra parameters are passed to the input function
@@ -86,68 +106,51 @@ split_table <- function(df, by = NULL, levels = NULL) {
 #' @param set_size Number of levels in group to compare in each iteration
 #' @param func function Function to apply to each set
 #' @param func_type Type of dplyr operation, e.g do, summarize
-#' @param grouped_input bool If TRUE, groups in 'dat' will be conserved in calls
-#'                           to func
 #' @param within character A column name from 'dat'. If given, comparisons will
 #'                         only be made between values which share the same
 #'                         values in the within column.
 #' @return A list of results from 'func'
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr group_by filter ungroup group_vars
-#' @export
-tibble_combn <- function(dat, set_size, func, func_type = summarize,
-  grouped_input = FALSE, within = NULL, ...) {
-  if (!is.null(within)) {
-    splitdat <- split_table(dat, by = within)
-  } else {
-    splitdat <- list(dat)
-  }
-
-  results <- lapply(splitdat, function(dat_within) {
-    grouping <- group_vars(dat_within)
-    group_levels <- unlist(unique(dat_within[, grouping]))
-
-    pairwise_comparisons <- combn(group_levels, set_size)
-
-    results_within <- apply(pairwise_comparisons, 2, function(x) {
-      # Extract the target groups from the tibble
-      result <- dat_within %>%
-        filter(!!as.name(grouping) %in% x) %>%
-        ungroup
-
-      # If 'func' requires grouped input, regroup 'dat_within'
-      if (grouped_input) {
-        # We need to ungroup then regroup because otherwise dplyr::do would
-        # remove the grouping from the input
-        result <- result %>%
-          func_type(func(group_by(., !!as.name(grouping)), ...))
+tibble_combn <- function(tbl, set_size, func, within = NULL, ...) {
+  grouping <- colnames(tbl)[1]
+  results <- tbl %>%
+    split_nested_tibble(by = within) %>%
+    # Apply the function to each within group separately
+    map(function(x) {
+      if (nrow(x) > 1) {
+        combinations <- combn(unlist(x[, 1]), set_size, simplify = FALSE)
+        result <- combinations %>%
+          # Filter the table
+          map(~filter(x, !!as.name(grouping) %in% .)) %>%
+          # Apply the function
+          map(function(x) func(x, ...))
+        names(result) <- combinations %>% map(~paste0(., collapse = "_by_"))
       } else {
-        result <- result %>%
-          func_type(func(., ...))
+        result <- NULL
       }
-      result})
-
-    # Add names to the outputs
-    names(results_within) <- apply(
-      pairwise_comparisons, 2, paste0, collapse = "_by_")
-
-    if (!is.null(within)) {
-      within_group <- unique(dat_within[, within])
-      within_section <- paste0("_within_", within_group)
-      names(results_within) <- paste0(names(results_within), within_section)
-    }
-
-    results_within
-  })
-  results <- unlist_preserving_names(results, recursive = FALSE)
+      result
+    }) %>%
+    filter_null %>%
+    unlist_preserving_names
   results
 }
 
 #' Unlist without changing the names of the inner objects
+#' @importFrom purrr map
 #' @export
 unlist_preserving_names <- function(x, recursive = FALSE) {
-  existing_names <- ulapply(x, names)
+  existing_names <- unlist(map(x, names))
   x <- unlist(x, recursive = recursive)
   names(x) <- existing_names
+  x
+}
+
+#' Remove all NULL values from a list
+#' @importFrom magrittr "%>%"
+#' @importFrom purrr map_lgl
+#' @export
+filter_null <- function(x) {
+  x[x %>% map_lgl(is.null)] <- NULL
   x
 }

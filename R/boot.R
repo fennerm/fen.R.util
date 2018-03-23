@@ -15,7 +15,7 @@
 #' @import dplyr
 #' @return A p-value
 #' @export
-bootstrap_test <- function(tbl, statistic, reps = 1e5) {
+bootstrap_test <- function(tbl, statistic, reps = 1e4) {
   combined_statistic <- tbl %>%
     unnest %>%
     summarize(statistic(., indices = 1:nrow(.))[1]) %>%
@@ -43,19 +43,24 @@ bootstrap_test <- function(tbl, statistic, reps = 1e5) {
 #' Apply a two group statistical test to each group in a nested tibble
 #' @importFrom dplyr group_vars
 #' @export
-boot_compare_all <- function(
-  grouped_mutation_table,
-  test,
-  within = NULL,
-  reps = 1e5) {
-  grouping <- group_vars(grouped_mutation_table)
-  p_values <- tibble_combn(grouped_mutation_table,
-    set_size = 2,
-    func = test,
-    func_type = summarize,
-    grouped_input = TRUE,
-    within = within,
-    reps = reps)
+boot_compare_all <- function(tbl, statistic, within = reps = 1e4, ...) {
+  
+  grouping <- group_vars(tbl)
+  if (!is.null(within)) {
+    tbls <- tbl %>% 
+      unnest %>% 
+      split_table(within) %>% 
+      map(~group_by(., !!as.name(grouping))) %>%
+      map(nest)
+  } else {
+    tbls <- list(tbl)
+  }
+  p_values <- tbls %>% 
+    map(
+      ~tibble_combn(., set_size = 2, func = bootstrap_test, 
+        func_type = summarize,
+        reps = reps,
+        statistic = statistic)
   output_table <- data.frame(names(p_values), unlist(unname(p_values)))
   colnames(output_table) <- c(grouping, "p_value")
   output_table
@@ -72,15 +77,15 @@ boot_compare_all <- function(
 #' @importFrom magrittr "%>%"
 #' @importFrom boot boot
 #' @export
-boot_quantiles <- function(tbl, statistic, reps = 1e5) {
+boot_quantiles <- function(tbl, statistic, reps = 1e4) {
   tbl %>%
-    mutate(stat = data %>%
+    mutate(value = data %>%
       map_dbl(~statistic(., 1:nrow(.))[1])) %>%
     mutate(boot_stat = data %>%
       map(boot, statistic = statistic, R = reps)) %>%
     mutate(quantiles = boot_stat %>%
       map(calc_bca_quantiles)) %>%
-    select(1, stat, quantiles) %>%
+    select(1, value, quantiles) %>%
     unnest
 }
 
@@ -109,7 +114,7 @@ center_distribution <- function(d, target) {
 #' @importFrom magrittr "%>%" set_colnames
 #' @importFrom tibble as_tibble
 bootstrap_centered_null <- function(
-  mutation_table, statistic, center, ..., reps = 1e5) {
+  mutation_table, statistic, center, ..., reps = 1e4) {
   boot_sample <- boot(mutation_table, statistic = statistic, R = reps, ...)$t
   colnames(boot_sample) <- c("value", "variance")
   centered_boot <- center_distribution(boot_sample[, "value"], target = center)
