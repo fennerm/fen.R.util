@@ -109,8 +109,9 @@ split_nested_tibble <- function(tbl, by) {
 #'                         If given, comparisons will only be made between rows
 #'                         which share the same group in the within column.
 #' @return A list of results from 'func'
+#' @importFrom tibble as.tibble
 #' @importFrom magrittr "%>%"
-#' @importFrom dplyr group_by filter
+#' @importFrom dplyr group_by filter mutate bind_rows
 #' @importFrom purrr map
 #' @export
 tibble_combn <- function(tbl, set_size, func, within = NULL, ...) {
@@ -121,19 +122,21 @@ tibble_combn <- function(tbl, set_size, func, within = NULL, ...) {
     map(function(x) {
       if (nrow(x) > 1) {
         combinations <- combn(unlist(x[, 1]), set_size, simplify = FALSE)
-        result <- combinations %>%
+        func_output <- combinations %>%
           # Filter the table
           map(~filter(x, !!as.name(grouping) %in% .)) %>%
           # Apply the function
           map(function(x) func(x, ...))
-        names(result) <- combinations %>% map(~paste0(., collapse = "_by_"))
+        # Bind the group names with the function results
+        output_table <- as.tibble(do.call("rbind", combinations)) %>%
+          mutate(result = unlist(func_output))
       } else {
-        result <- NULL
+        output_table <- NULL
       }
-      result
+      output_table
     }) %>%
     filter_null %>%
-    unlist_preserving_names
+    bind_rows
   results
 }
 
