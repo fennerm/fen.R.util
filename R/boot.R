@@ -24,8 +24,7 @@ bootstrap_test <- function(tbl, statistic, reps = 1e4) {
   # Bootstrap null distributions for each group
   tbl <- tbl %>%
     mutate(obs = map_dbl(data, ~statistic(., indices = 1:nrow(.))[1])) %>%
-    mutate(boot_null = map(
-        data,
+    mutate(boot_null = data %>% map(
         bootstrap_centered_null,
         statistic = statistic,
         center = combined_statistic,
@@ -71,7 +70,7 @@ boot_quantiles <- function(tbl, statistic, reps = 1e4) {
       map(boot, statistic = statistic, R = reps)) %>%
     mutate(quantiles = boot_stat %>%
       map(calc_bca_quantiles)) %>%
-    select(1, value, quantiles) %>%
+    select(-data, -boot_stat) %>%
     unnest
 }
 
@@ -112,7 +111,16 @@ bootstrap_centered_null <- function(
 #' @importFrom boot boot.ci
 #' @importFrom tibble tibble
 calc_bca_quantiles <- function(boot_object) {
-  ci <- boot.ci(boot_object)$bca[4:5]
-  quantiles <- quantile(boot_object$t[, 1], probs = c(0.25, 0.75))
-  tibble(ci1 = ci[1], q25 = quantiles[1], q75 = quantiles[2], ci2 = ci[2])
+  if (is.na(boot_object$t0[1])) {
+    output <- tibble(ci1 = NA, q25 = NA, q75 = NA, ci2 = NA)
+  } else {
+    ci <- boot.ci(boot_object)$bca[4:5]
+    quantiles <- quantile(boot_object$t[, 1], probs = c(0.25, 0.75))
+    output <- tibble(
+      ci1 = ci[1],
+      q25 = quantiles[1],
+      q75 = quantiles[2],
+      ci2 = ci[2])
+  }
+  output
 }

@@ -25,6 +25,7 @@ add_missing_columns <- function(table, column_names, fill = NA) {
   table
 }
 
+
 #' Replace rows in a data.frame by index
 #' @param df data.frame
 #' @param old_index Numeric; Index of the old row in df
@@ -126,7 +127,7 @@ tibble_combn <- function(tbl, set_size, func, within = NULL, ...) {
           # Filter the table
           map(~filter(x, !!as.name(grouping) %in% .)) %>%
           # Apply the function
-          map(function(x) func(x, ...))
+          map(func, ...)
         # Bind the group names with the function results
         output_table <- as.tibble(do.call("rbind", combinations)) %>%
           mutate(result = unlist(func_output))
@@ -156,5 +157,14 @@ unlist_preserving_names <- function(x, recursive = FALSE) {
 #' @export
 filter_null <- function(x) {
   x[x %>% map_lgl(is.null)] <- NULL
+  x
+}
+
+#' Replace all NULL values in a list
+#' @importFrom magrittr "%>%"
+#' @importFrom purrr map_lgl
+#' @export
+replace_null <- function(x, replacement) {
+  x[x %>% map_lgl(is.null)] <- replacement
   x
 }
