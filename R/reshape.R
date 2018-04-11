@@ -168,3 +168,16 @@ replace_null <- function(x, replacement) {
   x[x %>% map_lgl(is.null)] <- replacement
   x
 }
+
+#' Generate an empty square matrix
+#' @param dimnames character; The column/row dimensions.
+#' @return A matrix with dimnames as the column and row names.
+#' @export
+gen_square_matrix <- function(dimnames, fill = NA) {
+  dim = length(dimnames)
+  matrix(data = fill, nr = dim, nc = dim, dimnames = rep(list(dimnames), 2))
+}
+gen_square_tibble <- function(dimnames) {
+
+
+}
